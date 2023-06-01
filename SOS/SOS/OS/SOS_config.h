@@ -2,18 +2,15 @@
 /* Author  : Mustafa Mohammed Abdou               */
 /* Date    : 31 May , 2023                        */
 /* Version : V01                                  */
-/* Hint    : application layer APIs               */
+/* Hint    : Configuration file of SOS            */
 /**************************************************/
 
-#ifndef APP_H_
-#define APP_H_
+#ifndef SOS_CONFIG_H_
+#define SOS_CONFIG_H_
 
-void LED1_task(void);
+/** MACRO TO SET THE MAX NUMBER OF NEEDED TASKS **/
+#define MAX_TASKS    4
 
-/** INITIALIZATION FUNCTION **/
-void APP_init(void);
 
-/** MAIN LOGIC **/
-void APP_start(void);
 
-#endif /* APP_H_ */
+#endif /* SOS_CONFIG_H_ */

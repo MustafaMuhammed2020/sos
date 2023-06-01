@@ -12,5 +12,9 @@ main.c
 
 MCAL\dio\DIO_program.c
 
+MCAL\EXTINT\INT_program.c
+
 MCAL\timer0\TMR0_program.c
+
+OS\SOS_program.c
 
