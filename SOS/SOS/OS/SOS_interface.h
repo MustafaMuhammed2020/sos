@@ -15,20 +15,6 @@ typedef enum { SOS_STATUS_INVALID_STATE = 0 , SOS_STATUS_SUCCESS} enu_system_sta
 typedef enum { ONE_TIME_EXECUTED_TASK = 0 , PERIODIC_TASK } enu_task_cycle_t ;
 
 
-/***************************************************************/
-/** FUNCTION TO INITIALIZE THE SOS DATABASE                   **/
-/** PARAMETERS  : VOID                                        **/
-/** RETURNS     : enu_system_status_t (ERROR STATUS)          **/
-/***************************************************************/
-enu_system_status_t sos_init(void);
-
-/***************************************************************/
-/** FUNCTION TO RESET THE SOS DATABASE TO INVALID VALUES      **/
-/** PARAMETERS  : VOID                                        **/
-/** RETURNS     : enu_system_status_t (ERROR STATUS)          **/
-/***************************************************************/
-enu_system_status_t sos_deinit(void);
-
 /******************************************************************/
 /** FUNCTION TO CREATE TASK                                      **/
 /** PARAMETERS  : TASK_ID , TASK_PERIODICITY , POINTER TO TASK   **/
@@ -63,5 +49,19 @@ enu_system_status_t sos_run(void);
 /** RETURNS     : enu_system_status_t (ERROR STATUS)                  **/
 /***********************************************************************/
 enu_system_status_t sos_disable(void);
+
+/***************************************************************/
+/** FUNCTION TO INITIALIZE THE SOS DATABASE                   **/
+/** PARAMETERS  : VOID                                        **/
+/** RETURNS     : enu_system_status_t (ERROR STATUS)          **/
+/***************************************************************/
+enu_system_status_t sos_init(void);
+
+/***************************************************************/
+/** FUNCTION TO RESET THE SOS DATABASE TO INVALID VALUES      **/
+/** PARAMETERS  : VOID                                        **/
+/** RETURNS     : enu_system_status_t (ERROR STATUS)          **/
+/***************************************************************/
+enu_system_status_t sos_deinit(void);
 
 #endif /* SOS_INTERFACE_H_ */

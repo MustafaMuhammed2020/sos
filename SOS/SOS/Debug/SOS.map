@@ -533,27 +533,27 @@ END GROUP
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x13fa
+.debug_info     0x00000000     0x13fd
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000      0x4e6 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega32a/avr5/crtatmega32a.o
- .debug_info    0x000004e6      0x2e7 APP/APP.o
- .debug_info    0x000007cd      0x1cd HAL/button/button_program.o
- .debug_info    0x0000099a      0x1e7 HAL/led/LED_program.o
- .debug_info    0x00000b81       0x7a main.o
- .debug_info    0x00000bfb      0x2c7 MCAL/dio/DIO_program.o
- .debug_info    0x00000ec2      0x1e5 MCAL/timer0/TMR0_program.o
- .debug_info    0x000010a7      0x353 OS/SOS_program.o
+ .debug_info    0x000004e6      0x2e9 APP/APP.o
+ .debug_info    0x000007cf      0x1cd HAL/button/button_program.o
+ .debug_info    0x0000099c      0x1e7 HAL/led/LED_program.o
+ .debug_info    0x00000b83       0x7a main.o
+ .debug_info    0x00000bfd      0x2c7 MCAL/dio/DIO_program.o
+ .debug_info    0x00000ec4      0x1e5 MCAL/timer0/TMR0_program.o
+ .debug_info    0x000010a9      0x354 OS/SOS_program.o
 
-.debug_abbrev   0x00000000      0xa5a
+.debug_abbrev   0x00000000      0xa44
  *(.debug_abbrev)
  .debug_abbrev  0x00000000      0x4a3 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.7.374/gcc/dev/atmega32a/avr5/crtatmega32a.o
- .debug_abbrev  0x000004a3       0xca APP/APP.o
- .debug_abbrev  0x0000056d       0xf7 HAL/button/button_program.o
- .debug_abbrev  0x00000664       0x80 HAL/led/LED_program.o
- .debug_abbrev  0x000006e4       0x75 main.o
- .debug_abbrev  0x00000759       0xdf MCAL/dio/DIO_program.o
- .debug_abbrev  0x00000838       0xde MCAL/timer0/TMR0_program.o
- .debug_abbrev  0x00000916      0x144 OS/SOS_program.o
+ .debug_abbrev  0x000004a3       0xb2 APP/APP.o
+ .debug_abbrev  0x00000555       0xf7 HAL/button/button_program.o
+ .debug_abbrev  0x0000064c       0x80 HAL/led/LED_program.o
+ .debug_abbrev  0x000006cc       0x75 main.o
+ .debug_abbrev  0x00000741       0xdf MCAL/dio/DIO_program.o
+ .debug_abbrev  0x00000820       0xde MCAL/timer0/TMR0_program.o
+ .debug_abbrev  0x000008fe      0x146 OS/SOS_program.o
 
 .debug_line     0x00000000      0xc1c
  *(.debug_line .debug_line.* .debug_line_end)

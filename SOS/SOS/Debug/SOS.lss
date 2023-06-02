@@ -15,19 +15,19 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY
   5 .debug_aranges 00000190  00000000  00000000  00000690  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   000013fa  00000000  00000000  00000820  2**0
+  6 .debug_info   000013fd  00000000  00000000  00000820  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00000a5a  00000000  00000000  00001c1a  2**0
+  7 .debug_abbrev 00000a44  00000000  00000000  00001c1d  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00000c1c  00000000  00000000  00002674  2**0
+  8 .debug_line   00000c1c  00000000  00000000  00002661  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000002c8  00000000  00000000  00003290  2**2
+  9 .debug_frame  000002c8  00000000  00000000  00003280  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    000008bb  00000000  00000000  00003558  2**0
+ 10 .debug_str    000008bb  00000000  00000000  00003548  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000009e2  00000000  00000000  00003e13  2**0
+ 11 .debug_loc    000009e2  00000000  00000000  00003e03  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000120  00000000  00000000  000047f5  2**0
+ 12 .debug_ranges 00000120  00000000  00000000  000047e5  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -83,9 +83,9 @@ Disassembly of section .text:
   78:	0c 94 00 00 	jmp	0	; 0x0 <__vectors>
 
 0000007c <LED1_task>:
+uint8_t button2_status = 0 ; /** GLOBAL VARIABLE FOR BUTTON 2 **/
 
-uint8_t button2_status = 0 ;
-
+/** LED1 TOGGLE TASK **/
 void LED1_task()
 {
 	LED_TOGGLE(LED1_PORT , LED1_PIN);
@@ -97,6 +97,7 @@ void LED1_task()
 00000086 <LED2_task>:
 }
 
+/** LED2 TOGGLE TASK **/
 void LED2_task()
 {
 	LED_TOGGLE(LED2_PORT , LED2_PIN);
@@ -108,54 +109,55 @@ void LED2_task()
 00000090 <APP_init>:
 
 
-/** INITIALIZATION FUNCTION **/
-void APP_init(void)
+/** INITIALIZATION TASK **/
+void APP_init()
 {
-	LED_INIT(LED1_PORT , LED1_PIN);
+	LED_INIT(LED1_PORT , LED1_PIN); /** LED 1 INITILIZATION **/
   90:	63 e0       	ldi	r22, 0x03	; 3
   92:	83 e0       	ldi	r24, 0x03	; 3
   94:	0e 94 af 00 	call	0x15e	; 0x15e <LED_INIT>
 
-	LED_INIT(LED2_PORT , LED2_PIN);
+	LED_INIT(LED2_PORT , LED2_PIN); /** LED 2 INITIALIZATION **/
   98:	62 e0       	ldi	r22, 0x02	; 2
   9a:	82 e0       	ldi	r24, 0x02	; 2
   9c:	0e 94 af 00 	call	0x15e	; 0x15e <LED_INIT>
 	
-	Button_init();
+	Button_init(); /** BUTTON INITIALIZATION **/
   a0:	0e 94 85 00 	call	0x10a	; 0x10a <Button_init>
   a4:	08 95       	ret
 
 000000a6 <Stop_button_task>:
 }
 
-void Stop_button_task(void)
+/** SOS STOP TASK **/
+void Stop_button_task()
 {
-	Is_pressed(BUTTON2_PORT , BUTTON2_PIN , &button2_status);
+	Is_pressed(BUTTON2_PORT , BUTTON2_PIN , &button2_status); /** CHECK BUTTON STATUS **/
   a6:	40 e6       	ldi	r20, 0x60	; 96
   a8:	50 e0       	ldi	r21, 0x00	; 0
   aa:	64 e0       	ldi	r22, 0x04	; 4
   ac:	81 e0       	ldi	r24, 0x01	; 1
   ae:	0e 94 90 00 	call	0x120	; 0x120 <Is_pressed>
 	
-	if (button2_status == 1)
+	if (button2_status == 1) /** BECOMES TRUE WHEN BUTTON 2 PRESSED **/
   b2:	80 91 60 00 	lds	r24, 0x0060	; 0x800060 <__DATA_REGION_ORIGIN__>
   b6:	81 30       	cpi	r24, 0x01	; 1
   b8:	21 f4       	brne	.+8      	; 0xc2 <Stop_button_task+0x1c>
 	{
-		sos_disable();
+		sos_disable(); /** DISABLE SOS **/
   ba:	0e 94 d3 02 	call	0x5a6	; 0x5a6 <sos_disable>
 		
-		button2_status = 0 ;
+		button2_status = 0 ; /** REINITIALIZE BUTTON STATUS **/
   be:	10 92 60 00 	sts	0x0060, r1	; 0x800060 <__DATA_REGION_ORIGIN__>
   c2:	08 95       	ret
 
 000000c4 <APP_start>:
-// }
 
 /** MAIN LOGIC **/
 void APP_start(void)
 {
-	sos_create_task(0 , 0 , APP_init , ONE_TIME_EXECUTED_TASK);
+	/** TASKS CREATION **/
+	sos_create_task(TASK1 , TASK1_PERIODICITY , APP_init , ONE_TIME_EXECUTED_TASK);
   c4:	20 e0       	ldi	r18, 0x00	; 0
   c6:	48 e4       	ldi	r20, 0x48	; 72
   c8:	50 e0       	ldi	r21, 0x00	; 0
@@ -164,7 +166,7 @@ void APP_start(void)
   ce:	80 e0       	ldi	r24, 0x00	; 0
   d0:	0e 94 13 02 	call	0x426	; 0x426 <sos_create_task>
     
-	sos_create_task(1 , 1 , Stop_button_task , PERIODIC_TASK);
+	sos_create_task(TASK2 , TASK2_PERIODICITY , Stop_button_task , PERIODIC_TASK);
   d4:	21 e0       	ldi	r18, 0x01	; 1
   d6:	43 e5       	ldi	r20, 0x53	; 83
   d8:	50 e0       	ldi	r21, 0x00	; 0
@@ -173,9 +175,7 @@ void APP_start(void)
   de:	81 e0       	ldi	r24, 0x01	; 1
   e0:	0e 94 13 02 	call	0x426	; 0x426 <sos_create_task>
 	
-	//sos_create_task(2 , 1 , Start_button_task , PERIODIC_TASK);
-	
-	sos_create_task(2 , 300 , LED1_task , PERIODIC_TASK);
+	sos_create_task(TASK3 , TASK3_PERIODICITY , LED1_task , PERIODIC_TASK);
   e4:	21 e0       	ldi	r18, 0x01	; 1
   e6:	4e e3       	ldi	r20, 0x3E	; 62
   e8:	50 e0       	ldi	r21, 0x00	; 0
@@ -184,7 +184,7 @@ void APP_start(void)
   ee:	82 e0       	ldi	r24, 0x02	; 2
   f0:	0e 94 13 02 	call	0x426	; 0x426 <sos_create_task>
 
-	sos_create_task(3 , 500 , LED2_task , PERIODIC_TASK);
+	sos_create_task(TASK4 , TASK4_PERIODICITY , LED2_task , PERIODIC_TASK);
   f4:	21 e0       	ldi	r18, 0x01	; 1
   f6:	43 e4       	ldi	r20, 0x43	; 67
   f8:	50 e0       	ldi	r21, 0x00	; 0
@@ -193,7 +193,7 @@ void APP_start(void)
   fe:	83 e0       	ldi	r24, 0x03	; 3
  100:	0e 94 13 02 	call	0x426	; 0x426 <sos_create_task>
 	
-	sos_run();
+	sos_run(); /** START SCHEDULING **/
  104:	0e 94 ca 02 	call	0x594	; 0x594 <sos_run>
  108:	08 95       	ret
 
@@ -869,7 +869,7 @@ ISR(TIMER0_OVF_vect)
  3ec:	80 93 61 00 	sts	0x0061, r24	; 0x800061 <u8_gl_timer0_ovs>
 	
  	if ( u8_gl_timer0_ovs == TICK_OVER_FLOW ) /** BECOMES TRUE WHEN TIME EQUALS TO TICK TIME OVER FLOW COUNTER **/
- 3f0:	8e 33       	cpi	r24, 0x3E	; 62
+ 3f0:	8f 31       	cpi	r24, 0x1F	; 31
  3f2:	39 f4       	brne	.+14     	; 0x402 <__EEPROM_REGION_LENGTH__+0x2>
  	{
 		ptr_func_tmr0_callback(); /** EXECUTE THE FUNCTION TO WHICH THE GLOBAL VARIABLE POINTS **/

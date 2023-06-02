@@ -22,9 +22,13 @@
 typedef struct 
 {
 	uint8_t u8_a_task_id  ;
+	
 	uint16t u16_a_task_periodicity ;
+	
 	void (* ptr_func_task_handler) (void) ;
+	
 	enu_task_cycle_t enu_task_cycle_type ;
+	
 	uint16t u8_a_task_ready_flag ;
 	 	
 }str_task_t ;  
@@ -34,6 +38,6 @@ typedef struct
 /** ARGUMENTS  : VOID                                         **/
 /** RETURNS    : VOID                                         **/
 /***************************************************************/
-static void sos_scheduler() ;
+static void sos_scheduler(void) ;
 
 #endif /* SOS_PRIVATE_H_ */

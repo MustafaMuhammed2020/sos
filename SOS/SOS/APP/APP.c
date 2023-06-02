@@ -14,44 +14,48 @@
 #include "../HAL/led/LED_config.h"
 #include "../HAL/button/button_interface.h"
 #include "../HAL/button/button_config.h"
-#include "../MCAL/EXTINT/INT_interface.h"
-
+//#include "../MCAL/EXTINT/INT_interface.h"
 #include "../OS/SOS_interface.h"
 
-uint8_t button1_status = 0 ;
+#include "APP.h"
 
-uint8_t button2_status = 0 ;
+uint8_t button1_status = 0 ; /** GLOBAL VARIABLE FOR BUTTON 1 **/
 
+uint8_t button2_status = 0 ; /** GLOBAL VARIABLE FOR BUTTON 2 **/
+
+/** LED1 TOGGLE TASK **/
 void LED1_task()
 {
 	LED_TOGGLE(LED1_PORT , LED1_PIN);
 }
 
+/** LED2 TOGGLE TASK **/
 void LED2_task()
 {
 	LED_TOGGLE(LED2_PORT , LED2_PIN);
 }
 
 
-/** INITIALIZATION FUNCTION **/
-void APP_init(void)
+/** INITIALIZATION TASK **/
+void APP_init()
 {
-	LED_INIT(LED1_PORT , LED1_PIN);
+	LED_INIT(LED1_PORT , LED1_PIN); /** LED 1 INITILIZATION **/
 
-	LED_INIT(LED2_PORT , LED2_PIN);
+	LED_INIT(LED2_PORT , LED2_PIN); /** LED 2 INITIALIZATION **/
 	
-	Button_init();
+	Button_init(); /** BUTTON INITIALIZATION **/
 }
 
-void Stop_button_task(void)
+/** SOS STOP TASK **/
+void Stop_button_task()
 {
-	Is_pressed(BUTTON2_PORT , BUTTON2_PIN , &button2_status);
+	Is_pressed(BUTTON2_PORT , BUTTON2_PIN , &button2_status); /** CHECK BUTTON STATUS **/
 	
-	if (button2_status == 1)
+	if (button2_status == 1) /** BECOMES TRUE WHEN BUTTON 2 PRESSED **/
 	{
-		sos_disable();
+		sos_disable(); /** DISABLE SOS **/
 		
-		button2_status = 0 ;
+		button2_status = 0 ; /** REINITIALIZE BUTTON STATUS **/
 	}
 	
 }
@@ -72,17 +76,16 @@ void Stop_button_task(void)
 /** MAIN LOGIC **/
 void APP_start(void)
 {
-	sos_create_task(0 , 0 , APP_init , ONE_TIME_EXECUTED_TASK);
+	/** TASKS CREATION **/
+	sos_create_task(TASK1 , TASK1_PERIODICITY , APP_init , ONE_TIME_EXECUTED_TASK);
     
-	sos_create_task(1 , 1 , Stop_button_task , PERIODIC_TASK);
+	sos_create_task(TASK2 , TASK2_PERIODICITY , Stop_button_task , PERIODIC_TASK);
 	
-	//sos_create_task(2 , 1 , Start_button_task , PERIODIC_TASK);
-	
-	sos_create_task(2 , 300 , LED1_task , PERIODIC_TASK);
+	sos_create_task(TASK3 , TASK3_PERIODICITY , LED1_task , PERIODIC_TASK);
 
-	sos_create_task(3 , 500 , LED2_task , PERIODIC_TASK);
+	sos_create_task(TASK4 , TASK4_PERIODICITY , LED2_task , PERIODIC_TASK);
 	
-	sos_run();
+	sos_run(); /** START SCHEDULING **/
 	
 }
 

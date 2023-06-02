@@ -133,7 +133,7 @@ static void sos_scheduler()
  					sos_delete_task(u8_l_task_counter); /** DELETE THE TASK SO THAT IT WILL NOT BE EXECUTED AGAIN **/
  				}
 				
-				else /** CYCLIC TASK **/
+				else /** PERIODIC TASK **/
 				{
 					str_gl_tasks_data[u8_l_task_counter].u8_a_task_ready_flag = str_gl_tasks_data[u8_l_task_counter].u16_a_task_periodicity - 1; /** UPDATE READY FLAG **/
 					
