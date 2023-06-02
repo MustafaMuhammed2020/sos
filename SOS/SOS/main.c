@@ -1,18 +1,19 @@
-/*
- * SOS.c
- *
- * Created: 31/05/2023 03:00:12 م
- * Author : click
- */ 
-
-#include <avr/io.h>
+/**************************************************/
+/* Author  : Mustafa Mohammed Abdou               */
+/* Date    : 31 May , 2023                        */
+/* Version : V01                                  */
+/**************************************************/
 
 
 int main(void)
 {
+	/** START TASKS EXECUTION **/
+	APP_start();
+	
     /* Replace with your application code */
     while (1) 
     {
+		
     }
 }
 

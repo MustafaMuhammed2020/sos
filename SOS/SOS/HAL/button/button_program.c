@@ -29,6 +29,8 @@ void Button_init(void)
 {
 	/** SET THE DIRECTION OF BUTTON AS INPUT **/
 	DIO_setpindir(BUTTON1_PORT , BUTTON1_PIN , DIO_PIN_INPUT);
+	
+	DIO_setpindir(BUTTON2_PORT , BUTTON2_PIN , DIO_PIN_INPUT);
 }
 
 

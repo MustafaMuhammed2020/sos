@@ -8,6 +8,9 @@
 #ifndef TMR0_CONFIG_H
 #define TMR0_CONFIG_H
 
+/** NUMBER OF OVERFLOWS NEEDED FOR 1 ms  **/
+#define TICK_OVER_FLOW    31
+
 /*******************************************************************/
 /**                 TMR0 CLOCK SOURCE                             **/
 /** AVAILABLE CHOICES     1 - INTERNAL_CLK_SRC                    **/

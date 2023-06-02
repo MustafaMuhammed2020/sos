@@ -8,10 +8,6 @@
 #ifndef TMR0_INTERFACE_H
 #define TMR0_INTERFACE_H
 
-/** DIFFERENT MACROS FOR TMR0 CONFIGURATION **/
-
-
-#define F_CPU 8000000 /** DEFINE THE CLOCK SOURCE FREQUENCY **/
 
 /** MACROS FOR THE CLOCK SOURCE  **/
 #define INTERNAL_CLK_SRC                       0
@@ -75,22 +71,28 @@ TMR0_stop_error TMR0_stop(void);
 /** ARGUMENTS  : TAKES DELAY IN ms                                             */
 /** RETURNS    : TMR0_delay                                                    */
 /*******************************************************************************/
-TMR0_delay_error TMR0_delayms(uint32_t u32_a_delayms);
+//TMR0_delay_error TMR0_delayms(uint32_t u32_a_delayms);
 
 /*******************************************************************************/
 /** FUNCTION TO SET DELAY USING TIMER 0                                        */
 /** ARGUMENTS  : TAKES DELAY IN ms                                             */
 /** RETURNS    : TMR0_delay                                                    */
 /*******************************************************************************/
-TMR0_delay_error TMR0_delaymicros(uint32_t u32_a_delaymicros);
+//TMR0_delay_error TMR0_delaymicros(uint32_t u32_a_delaymicros);
 
+/************************************************************************/
+/** FUNCTION TO SET THE CALL BACK GLOBAL POINTER OF TIMER0             **/
+/** ARGUMENTS  : void (*ptr)(void) (PINTER TO CALL BACK FUNCTION)      **/
+/** RETURNS    : VOID                                                  **/
+/************************************************************************/
+void TMR0_setcallback( void (*ptr_func)(void) );
 
 /******************************************************************************/
 /** FUNCTION TO CALCULATE THE NUMBER OF OVERFLOWS FOR DELAY IN MS            **/
 /** ARGUMENTS  : DELAY IN MS                                                 **/
 /** RETURN     : RETURNS THE NUMBER OF OVS                                   **/
 /******************************************************************************/
-uint32_t TMR0_getovs(uint16t u16_a_delay);
+//uint32_t TMR0_getovs(uint16t u16_a_delay);
 
 
 #endif

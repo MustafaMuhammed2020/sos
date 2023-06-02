@@ -6,6 +6,8 @@
 /******************************************************************/ 
 
 /** INCLUDE LIBRARIES **/
+#include <avr/interrupt.h>
+
 #include "../../SERVICE/common_macros.h"
 #include "../../SERVICE/standard_types.h"
 
@@ -17,7 +19,9 @@
 #include "TMR0_private.h"
 #include "TMR0_config.h"
 
-uint32_t u32_gs_tmr0nuofovs = 0 ;   /** VARIABLE TO HOLD THE NUMBER OF OVER FLOWS **/
+void ( * ptr_func_tmr0_callback ) ( void );  /** GLOBAL VARIABLE FOR TIMER0 CALL BACK **/
+
+uint8_t u8_gl_timer0_ovs = 0 ; /** GLOBAL VARIABLE INCREASES UNTILL THE TICK TIME VALUE **/
 
 
 /****************************************************************/
@@ -67,9 +71,9 @@ TMR0_init_error TMR0_init(void)
 	 
 	 en_a_initstatus = VALID_INIT ; /** INITIALIZATION STATUS IS TRUE **/
 	 
-// 	 /* ENABLE INTERRUPT */
-// 	 set_bit(SREG , 7);
-// 	 set_bit(TIMSK , 0);
+ 	 /* ENABLE INTERRUPT */
+ 	 set_bit(SREG , 7);
+ 	 set_bit(TIMSK , 0);
 	 
 	 #elif TIMER0_MODE == TMR0_FASTPWM_NON_INVERTED_MODE
 	 
@@ -221,171 +225,27 @@ TMR0_stop_error TMR0_stop(void)
 	
 }
 
-/*******************************************************************************/
-/** FUNCTION TO SET DELAY USING TIMER 0                                        */
-/** ARGUMENTS  : TAKES DELAY IN ms                                             */
-/** RETURNS    : TMR0_delay                                                    */
-/*******************************************************************************/
-TMR0_delay_error TMR0_delayms(uint32_t u32_a_delayms)
+
+/************************************************************************/
+/** FUNCTION TO SET THE CALL BACK GLOBAL POINTER OF TIMER0             **/
+/** ARGUMENTS  : void (*ptr)(void) (PINTER TO CALL BACK FUNCTION)      **/
+/** RETURNS    : VOID                                                  **/
+/************************************************************************/
+void TMR0_setcallback( void (*ptr_func)(void) )
 {
-	
-	uint32_t u32_a_overflowcounter = 0 ;
-	
-	TMR0_delay_error en_a_delaystatus = NOT_VALID_DELAY ; /** VARIABLE TO RETURN THE STATUS **/
-	
-	/******************************************************************************************/
-	/**               THIS CALCULATIONS CONFIGURED AS F_CPU   16 MHZ                         **/
-	/******************************************************************************************/
-	#if TIMER0_PRESCALER_VAL == PRESCALER_1024  /** CHECK THE PRESCALLER FROM CONFIG FILE **/
-	 
-        u32_gs_tmr0nuofovs = (u32_a_delayms / 16.384);   /** CALCULATING NUMBER OF OVERFLOWS ( DESIRED DELAY / TIME OF OVER FLOW ) **/ 
-	
-        TCNT0 = 0 ;   /** SET THE INITIAL VALUE IN TCNT0 REGISTER **/
-	
-	    en_a_delaystatus = VALID_DELAY ; /** VALID DELAY CONFIGURATIN **/
-	
-	#elif TIMER0_PRESCALER_VAL == PRESCALER_256
-
-	    u32_gs_tmr0nuofovs = (u32_a_delayms / 4.096);   /** CALCULATING NUMBER OF OVERFLOWS ( DESIRED DELAY / TIME OF OVER FLOW ) **/
-	
-	    TCNT0 = 0 ;   /** SET THE INITIAL VALUE IN TCNT0 REGISTER **/
-	
-	    en_a_delaystatus = VALID_DELAY ; /** VALID DELAY CONFIGURATIN **/
-	
-	#elif TIMER0_PRESCALER_VAL == PRESCALER_64
-		
-	    u32_gs_tmr0nuofovs = (u32_a_delayms / 1.024);   /** CALCULATING NUMBER OF OVERFLOWS ( DESIRED DELAY / TIME OF OVER FLOW ) **/
-	
-	    TCNT0 = 0 ;   /** SET THE INITIAL VALUE IN TCNT0 REGISTER **/
-	
-	    en_a_delaystatus = VALID_DELAY ; /** VALID DELAY CONFIGURATIN **/
-	
-	#elif TIMER0_PRESCALER_VAL == NO_PRESCALER
-	
-	    u32_gs_tmr0nuofovs = (u32_a_delayms / 0.032);   /** CALCULATING NUMBER OF OVERFLOWS ( DESIRED DELAY / TIME OF OVER FLOW ) **/
-	
-	    TCNT0 = 0 ;   /** SET THE INITIAL VALUE IN TCNT0 REGISTER **/
-	
-	    en_a_delaystatus = VALID_DELAY ; /** VALID DELAY CONFIGURATIN **/
-	
-	#endif
-	
-	TMR0_start(); /** START TMR0 PRESCALLER **/
-	
-	while ( u32_a_overflowcounter < u32_gs_tmr0nuofovs ) /** STUCK IN THIS LOOP UNTILL THIS CONDITION IS FALSE **/
-	{
-		while((TIFR & (1 << 0)) == 0); /** DO NOTHING UNTILL THIS FLAG RAISED (OVERFLOW HAPPENED) **/
-		
-		set_bit(TIFR , 0);        /** CLEAR THE FLAG BY SOFTWARE **/
-		
-		u32_a_overflowcounter++ ; /** INCREASE THE OVERFLOWS BY ONE **/
-	}
-	
-	u32_gs_tmr0nuofovs = 0 ; /** REINTIALIZE THE OVERFLOWS COUNTER TO 0 AGAIN **/
-
-	TMR0_stop();   /** STOP TMR0 TOSTART FROM 0 WHEN IT CALLED AGAIN **/
-	
-	return en_a_delaystatus ; /** RETURN THE STATUS **/
+	ptr_func_tmr0_callback = ptr_func; /** TIMER0 GLOBAL POINTER POINTS TO THE PASSED FUNCTION **/
 }
 
-/*******************************************************************************/
-/** FUNCTION TO SET DELAY USING TIMER 0                                        */
-/** ARGUMENTS  : TAKES DELAY IN ms                                             */
-/** RETURNS    : TMR0_delay                                                    */
-/*******************************************************************************/
-TMR0_delay_error TMR0_delaymicros(uint32_t u32_a_delaymicros)
+/** TIMER0 INTERRUPT SERVICE ROUTINE **/
+ISR(TIMER0_OVF_vect)
 {
-	uint32_t u32_a_overflowcounter = 0 ;
+	u8_gl_timer0_ovs++ ; /** INCREASE THE NUMBER OF OVERFLOWS BY 1 **/
 	
-	TMR0_delay_error en_a_delaystatus = NOT_VALID_DELAY ; /** VARIABLE TO RETURN THE STATUS **/
-	
-	/******************************************************************************************/
-	/**               THIS CALCULATIONS CONFIGURED AS F_CPU   1 MHZ                          **/
-	/******************************************************************************************/
-	#if TIMER0_PRESCALER_VAL == PRESCALER_1024  /** CHECK THE PRESCALLER FROM CONFIG FILE **/
-	
-	u32_gs_tmr0nuofovs = (u32_a_delaymicros / 32768);   /** CALCULATING NUMBER OF OVERFLOWS ( DESIRED DELAY / TIME OF OVER FLOW ) **/
-	
-	TCNT0 = 0 ;   /** SET THE INITIAL VALUE IN TCNT0 REGISTER **/
-	
-	en_a_delaystatus = VALID_DELAY ; /** VALID DELAY CONFIGURATIN **/
-	
-	#elif TIMER0_PRESCALER_VAL == PRESCALER_256
-
-	u32_gs_tmr0nuofovs = (u32_a_delaymicros / 65536);   /** CALCULATING NUMBER OF OVERFLOWS ( DESIRED DELAY / TIME OF OVER FLOW ) **/
-	
-	TCNT0 = 0 ;   /** SET THE INITIAL VALUE IN TCNT0 REGISTER **/
-	
-	en_a_delaystatus = VALID_DELAY ; /** VALID DELAY CONFIGURATIN **/
-	
-	#elif TIMER0_PRESCALER_VAL == PRESCALER_64
-	
-	u32_gs_tmr0nuofovs = (u32_a_delaymicros / 16384);   /** CALCULATING NUMBER OF OVERFLOWS ( DESIRED DELAY / TIME OF OVER FLOW ) **/
-	
-	TCNT0 = 0 ;   /** SET THE INITIAL VALUE IN TCNT0 REGISTER **/
-	
-	en_a_delaystatus = VALID_DELAY ; /** VALID DELAY CONFIGURATIN **/
-	
-	#elif TIMER0_PRESCALER_VAL == NO_PRESCALER
-	
-	u32_gs_tmr0nuofovs = (u32_a_delaymicros / 32);   /** CALCULATING NUMBER OF OVERFLOWS ( DESIRED DELAY / TIME OF OVER FLOW ) **/
-	
-	TCNT0 = 0 ;   /** SET THE INITIAL VALUE IN TCNT0 REGISTER **/
-	
-	en_a_delaystatus = VALID_DELAY ; /** VALID DELAY CONFIGURATIN **/
-	
-	#endif
-	
-	TMR0_start(); /** START TMR0 PRESCALLER **/
-	
-	while( u32_a_overflowcounter < u32_gs_tmr0nuofovs ) /** STUCK IN THIS LOOP UNTILL THIS CONDITION IS FALSE **/
-	{
-		while((TIFR & (1 << 0)) == 0); /** DO NOTHING UNTILL THIS FLAG RAISED (OVERFLOW HAPPENED) **/
+ 	if ( u8_gl_timer0_ovs == TICK_OVER_FLOW ) /** BECOMES TRUE WHEN TIME EQUALS TO TICK TIME OVER FLOW COUNTER **/
+ 	{
+		ptr_func_tmr0_callback(); /** EXECUTE THE FUNCTION TO WHICH THE GLOBAL VARIABLE POINTS **/
 		
-		set_bit(TIFR , 0);        /** CLEAR THE FLAG BY SOFTWARE **/
-		
-		u32_a_overflowcounter++ ; /** INCREASE THE OVERFLOWS BY ONE **/
-	}
-	
-	u32_a_overflowcounter = 0 ; /** REINTIALIZE THE OVERFLOWS COUNTER TO 0 AGAIN **/
-
-	TMR0_stop(); /** STOP TMR0 TOSTART FROM 0 WHEN IT CALLED AGAIN **/
-	
-	return en_a_delaystatus ; 
-}
-
-/******************************************************************************/
-/** FUNCTION TO CALCULATE THE NUMBER OF OVERFLOWS FOR DELAY IN MS            **/
-/** ARGUMENTS  : DELAY IN MS                                                 **/
-/** RETURN     : RETURNS THE NUMBER OF OVS                                   **/
-/******************************************************************************/
-uint32_t TMR0_getovs(uint16t u16_a_delay)
-{
-	uint32_t u32_a_ovs = 0 ; /** LOCAL VARIABLE TO RETURN THE NUMBER OF OVERFLOWS **/
-	
-	/********************************************************************/
-	/**      THIS CALCULATIONS ARE DONE ON 8 MHZ F_CPU                 **/
-	/********************************************************************/
-	#if TIMER0_PRESCALER_VAL ==  PRESCALER_1024   /** CHECK THE PRESCALLER FROM CONFIG FILE **/
-	
-	u32_a_ovs = (u16_a_delay / 32);   /** CALCULATING NUMBER OF OVERFLOWS ( DESIRED DELAY / TIME OF OVER FLOW ) **/
-	
-
-	#elif TIMER0_PRESCALER_VAL ==  PRESCALER_256 
-
-	u32_a_ovs = (u16_a_delay / 8);   /** CALCULATING NUMBER OF OVERFLOWS ( DESIRED DELAY / TIME OF OVER FLOW ) **/
-	
-	
-	#elif TIMER0_PRESCALER_VAL == PRESCALER_8 
-	
-	u32_a_ovs = (u16_a_delay / 0.256);   /** CALCULATING NUMBER OF OVERFLOWS ( DESIRED DELAY / TIME OF OVER FLOW ) **/
-	
-
-	#elif TIMER0_PRESCALER_VAL == NO_PRESCALER 
-	
-	u32_a_ovs = (u16_a_delay / 0.032);   /** CALCULATING NUMBER OF OVERFLOWS ( DESIRED DELAY / TIME OF OVER FLOW ) **/
-	
-	#endif
-	
-	return u32_a_ovs ;  /** RETURN THE CALCULATED NUMBER OF OVERFLOWS **/
+ 		u8_gl_timer0_ovs = 0 ; /** REINITIALIZE TIMER0 OVERFLOW COUNTER TO 0 AGAIN **/
+ 	}
+	 TCNT0 = 0 ;
 }
