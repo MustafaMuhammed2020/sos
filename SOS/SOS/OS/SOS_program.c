@@ -109,7 +109,7 @@ enu_system_status_t sos_modify_task(uint8_t u8_a_task_id , uint16t u16_a_task_pe
 /** ARGUMENTS  : VOID                                         **/
 /** RETURNS    : VOID                                         **/
 /***************************************************************/
-static void sos_scheduler()
+static void sos_scheduler(void)
 {
 	uint8_t u8_l_task_counter = 0 ; /** LOCAL VARIABLE TO LOOP OVER TASKS **/
 	
@@ -119,10 +119,6 @@ static void sos_scheduler()
 		/** CHECK IF THE TASK IS CREATED PREVIOUSLY **/
 		if ((str_gl_tasks_data[u8_l_task_counter].ptr_func_task_handler != NULL))
 		{
-			//(str_gl_tasks_data[u8_l_task_counter].u8_a_task_ready_flag == 0)
-			//str_gl_tasks_data[u8_l_task_counter].u16_a_task_periodicity
-			//(u16_g_ticks % str_gl_tasks_data[u8_l_task_counter].u16_a_task_periodicity) == 0 
-			
 			if( str_gl_tasks_data[u8_l_task_counter].u8_a_task_ready_flag == TASK_READY ) /** CHECK THE TASK PERIODICITY **/
 			{
 				
@@ -158,15 +154,41 @@ static void sos_scheduler()
 /***********************************************************************/
 /** FUNCTION TO START SOS SCHEDULING TASK                             **/
 /** PARAMETERS  : VOID                                                **/
-/** RETURNS     : enu_system_status_t (ERROR STATUS)                  **/
+/** RETURNS     : VOID                                                **/
 /***********************************************************************/
-enu_system_status_t sos_run(void)
+void sos_run(void)
+{
+	TMR0_start(); /** TIMER0 START COUNTING **/
+}
+
+/***************************************************************/
+/** FUNCTION TO INITIALIZE THE SOS DATABASE                   **/
+/** PARAMETERS  : VOID                                        **/
+/** RETURNS     : enu_system_status_t (ERROR STATUS)          **/
+/***************************************************************/
+enu_system_status_t sos_init(void)
 {
 	TMR0_setcallback(sos_scheduler) ; /** CALL SCHEDULER IN EACH OVERFLOW **/
 	
 	TMR0_init();  /** INITIALIZE TIMER 0 **/
+}
+
+/***************************************************************/
+/** FUNCTION TO RESET THE SOS DATABASE TO INVALID VALUES      **/
+/** PARAMETERS  : VOID                                        **/
+/** RETURNS     : VOID                                        **/
+/***************************************************************/
+void sos_deinit(void)
+{
+	uint8_t u8_l_task_counter = 0 ; /** LOCAL VARIABLE TO LOOP OVER TASKS **/
 	
-	TMR0_start(); /** TIMER0 START COUNTING **/
+	/** LOOP OVER CREATED TASKS **/
+	for (u8_l_task_counter = 0 ; u8_l_task_counter < MAX_TASKS ; u8_l_task_counter++)
+	{
+		/** TASK HANDLER POINTS TO NULL **/
+		str_gl_tasks_data[u8_l_task_counter].ptr_func_task_handler = NULL ;
+	}
+		
 }
 
 /***********************************************************************/
@@ -177,4 +199,6 @@ enu_system_status_t sos_run(void)
 enu_system_status_t sos_disable(void)
 {
 	TMR0_stop();  /** STOP TIMER 0 **/
+	
+	
 }

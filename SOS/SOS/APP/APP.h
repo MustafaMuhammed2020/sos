@@ -24,14 +24,22 @@
 /** LED1 TOGGLE TASK **/
 void LED1_task(void);
 
+
 /** LED2 TOGGLE TASK **/
 void LED2_task(void);
+
 
 /** SOS STOP TASK **/
 void Stop_button_task(void);
 
+
+/** CALLBACK FUNCTION OF EXTINT0 **/
+void start_button(void);
+
+
 /** INITIALIZATION TASK **/
 void APP_init(void);
+
 
 /** MAIN LOGIC **/
 void APP_start(void);

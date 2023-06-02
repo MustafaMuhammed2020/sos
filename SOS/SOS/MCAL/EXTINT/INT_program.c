@@ -6,6 +6,7 @@
 /***************************************************/
 
 /** INCLUDE LIBRARIES **/
+#include <avr/interrupt.h>
 #include "../../SERVICE/standard_types.h"
 #include "../../SERVICE/common_macros.h"
 
@@ -14,6 +15,7 @@
 #include "INT_private.h"
 #include "INT_config.h"
 
+void ( * ptr_func_exint0_callback ) ( void );  /** GLOBAL VARIABLE FOR TIMER0 CALL BACK **/
 
 /********************************************************/
 /** FUNCTION TO SET THE GLOBAL INTERRUPT ENABLE FLAG    */
@@ -40,10 +42,8 @@ void SET_GLOBALINTERRUPT(void)
 void INT0_INIT(void)
 {
 	SET_GLOBALINTERRUPT(); /** ENABLE GLOBAL INTERRUPTS */
-	
+
 	set_bit(SREG , 7);
-	
-	
 	
 	/** CONFIGURE THE INT0 TRIGGER EVENT **/
 	#if  EXTERNAL_INT0_TRIGGER   ==  INT_TRIGGER_RISING_EDGE 
@@ -73,6 +73,17 @@ void INT0_INIT(void)
 	set_bit(GICR , 6);	
 }
 
+
+
+/************************************************************************/
+/** FUNCTION TO SET THE CALL BACK GLOBAL POINTER OF EXTINT0            **/
+/** ARGUMENTS  : void (*ptr)(void) (PINTER TO CALL BACK FUNCTION)      **/
+/** RETURNS    : VOID                                                  **/
+/************************************************************************/
+void EXTINT0_setcallback( void (*ptr_func)(void) )
+{
+	ptr_func_exint0_callback = ptr_func; /** TIMER0 GLOBAL POINTER POINTS TO THE PASSED FUNCTION **/
+}
 
 /********************************************************/
 /** FUNCTION TO INITIALIZE INT1                         */
@@ -132,6 +143,10 @@ void INT2_INIT(void)
 	  set_bit(MCUCSR , 6);
 	  
 	#endif
-	
-	
+}
+
+/** EXTERNAL INTERRUPT 0 ISR **/
+ISR(INT0_vect)
+{
+	ptr_func_exint0_callback(); 
 }

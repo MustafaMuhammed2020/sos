@@ -32,6 +32,13 @@ void SET_GLOBALINTERRUPT(void);
 /********************************************************/
 void INT0_INIT(void);
 
+/************************************************************************/
+/** FUNCTION TO SET THE CALL BACK GLOBAL POINTER OF EXTINT0            **/
+/** ARGUMENTS  : void (*ptr)(void) (PINTER TO CALL BACK FUNCTION)      **/
+/** RETURNS    : VOID                                                  **/
+/************************************************************************/
+void EXTINT0_setcallback( void (*ptr_func)(void) );
+
 /********************************************************/
 /** FUNCTION TO INITIALIZE INT1                         */
 /** ARGUMENTS  : VOID                                   */

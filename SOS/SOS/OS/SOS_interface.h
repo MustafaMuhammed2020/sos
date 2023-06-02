@@ -39,9 +39,9 @@ enu_system_status_t sos_modify_task(uint8_t u8_a_task_id , uint16t u16_a_task_pe
 /***********************************************************************/
 /** FUNCTION TO START SOS SCHEDULING TASK                             **/
 /** PARAMETERS  : VOID                                                **/
-/** RETURNS     : enu_system_status_t (ERROR STATUS)                  **/
+/** RETURNS     : VOID                                                **/
 /***********************************************************************/
-enu_system_status_t sos_run(void);
+void sos_run(void);
 
 /***********************************************************************/
 /** FUNCTION TO STOP SOS SCHEDULING TASK                              **/
@@ -60,8 +60,8 @@ enu_system_status_t sos_init(void);
 /***************************************************************/
 /** FUNCTION TO RESET THE SOS DATABASE TO INVALID VALUES      **/
 /** PARAMETERS  : VOID                                        **/
-/** RETURNS     : enu_system_status_t (ERROR STATUS)          **/
+/** RETURNS     : VOID                                        **/
 /***************************************************************/
-enu_system_status_t sos_deinit(void);
+void sos_deinit(void);
 
 #endif /* SOS_INTERFACE_H_ */
